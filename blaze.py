@@ -1,18 +1,18 @@
-import sys
-import os
-import shutil
-
-from flask import Flask, render_template_string, abort
 # -*- coding: utf-8 -*-
 """
 BLAZE RUST — Wiki сайт сервера (Flask, один файл)
 
-Запуск:
+Локальный запуск:
     pip install flask
     python blaze.py
 
-Сайт откроется по адресу: http://127.0.0.1:5000
+Сборка статики для GitHub Pages:
+    python blaze.py --build --base "/blazerust"
 """
+
+import sys
+import os
+import shutil
 
 from flask import Flask, render_template_string, abort
 
@@ -768,7 +768,7 @@ function toggleSidebar(){ document.body.classList.toggle('nav-open'); }
 
 
 # ---------------------------------------------------------------------------
-# Маршруты
+# Сборка статического сайта (для GitHub Pages)
 # ---------------------------------------------------------------------------
 def build_static(output_dir="_site", base="/"):
     """Собирает статический сайт для GitHub Pages."""
@@ -793,6 +793,10 @@ def build_static(output_dir="_site", base="/"):
                 f.write(html)
     print("Статический сайт собран в папке %s (base=%s)" % (output_dir, base))
 
+
+# ---------------------------------------------------------------------------
+# Маршруты
+# ---------------------------------------------------------------------------
 @app.route("/")
 def home():
     return render_template_string(
@@ -825,5 +829,11 @@ def wiki(slug):
 
 
 if __name__ == "__main__":
-    print("BLAZE RUST Wiki запущен: http://127.0.0.1:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    if "--build" in sys.argv:
+        base = "/"
+        if "--base" in sys.argv:
+            base = sys.argv[sys.argv.index("--base") + 1]
+        build_static(base=base)
+    else:
+        print("BLAZE RUST Wiki запущен: http://127.0.0.1:5000")
+        app.run(host="0.0.0.0", port=5000, debug=True)
