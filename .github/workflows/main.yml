@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    name: Сборка статического сайта
+    name: Сборка из blaze.py
     runs-on: ubuntu-latest
     steps:
       - name: Клонирование репозитория
@@ -30,11 +30,18 @@ jobs:
       - name: Установка Flask
         run: pip install flask
 
-      - name: Генерация статического сайта
+      - name: Генерация сайта из Python (blaze.py)
         run: python blaze.py --build --base "/${{ github.event.repository.name }}"
+
+      # Ключевой фикс: запрещает Jekyll обрабатывать сайт,
+      # чтобы GitHub отдавал HTML как сайт, а не как текст
+      - name: Добавить .nojekyll
+        run: touch _site/.nojekyll
 
       - name: Настройка GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Загрузка артефакта
         uses: actions/upload-pages-artifact@v3
