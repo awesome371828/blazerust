@@ -770,6 +770,29 @@ function toggleSidebar(){ document.body.classList.toggle('nav-open'); }
 # ---------------------------------------------------------------------------
 # Маршруты
 # ---------------------------------------------------------------------------
+def build_static(output_dir="_site", base="/"):
+    """Собирает статический сайт для GitHub Pages."""
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+
+    routes = [("/", "index.html")]
+    for slug in PAGES:
+        routes.append(("/page/%s" % slug, os.path.join("page", slug, "index.html")))
+
+    with app.test_client() as client:
+        for url, rel_path in routes:
+            html = client.get(url).get_data(as_text=True)
+            if base and base != "/":
+                html = html.replace('href="/', 'href="%s/' % base)
+                html = html.replace('src="/', 'src="%s/' % base)
+            full_path = os.path.join(output_dir, rel_path)
+            d = os.path.dirname(full_path)
+            if d:
+                os.makedirs(d, exist_ok=True)
+            with open(full_path, "w", encoding="utf-8") as f:
+                f.write(html)
+    print("Статический сайт собран в папке %s (base=%s)" % (output_dir, base))
+
 @app.route("/")
 def home():
     return render_template_string(
