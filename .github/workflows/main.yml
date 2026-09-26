@@ -1,0 +1,85 @@
+# BLAZE RUST Wiki — CI/CD пайплайн
+# Запускается при пуше в main, а также вручную (Actions → Run workflow)
+name: BLAZE RUST Wiki Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # ---------- 1. Проверка кода ----------
+  check:
+    name: Проверка кода
+    runs-on: ubuntu-latest
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Установка зависимостей
+        run: |
+          pip install --upgrade pip
+          pip install flask
+
+      - name: Проверка синтаксиса blaze.py
+        run: python -m py_compile blaze.py
+
+      - name: Быстрый smoke-тест (приложение стартует)
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, '.')
+          import importlib.util
+          spec = importlib.util.spec_from_file_location("blaze", "blaze.py")
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          # Проверяем, что маршруты созданы
+          routes = sorted(str(r) for r in mod.app.url_map.iter_rules())
+          assert len(routes) >= 2, "Маршруты не зарегистрированы!"
+          print("OK: маршруты ->", routes)
+          EOF
+
+  # ---------- 2. Деплой на сервер ----------
+  deploy:
+    name: Деплой на сервер
+    needs: check
+    runs-on: ubuntu-latest
+    # Если сервера пока нет — поставь 'if: false', чтобы отключить деплой
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v4
+
+      - name: Копирование blaze.py на сервер
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}        # IP или домен сервера
+          username: ${{ secrets.SSH_USER }}    # пользователь, например root
+          key: ${{ secrets.SSH_KEY }}          # приватный SSH-ключ
+          port: 22
+          source: "blaze.py"
+          target: "/opt/blaze-rust-wiki"
+
+      - name: Установка зависимостей и перезапуск
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            cd /opt/blaze-rust-wiki
+            pip3 install --upgrade flask || true
+            # Перезапуск через systemd (сервис blaze-wiki)
+            if systemctl list-units --type=service | grep -q blaze-wiki; then
+              sudo systemctl restart blaze-wiki
+              echo "Сервис blaze-wiki перезапущен"
+            else
+              echo "Сервис blaze-wiki не найден — создайте systemd unit (см. ниже)"
+            fi
