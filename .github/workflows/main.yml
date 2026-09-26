@@ -1,16 +1,22 @@
-# BLAZE RUST Wiki — CI/CD пайплайн
-# Запускается при пуше в main, а также вручную (Actions → Run workflow)
-name: BLAZE RUST Wiki Deploy
+name: BLAZE RUST Wiki — GitHub Pages
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  # ---------- 1. Проверка кода ----------
-  check:
-    name: Проверка кода
+  build:
+    name: Сборка статического сайта
     runs-on: ubuntu-latest
     steps:
       - name: Клонирование репозитория
@@ -21,65 +27,28 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Установка зависимостей
-        run: |
-          pip install --upgrade pip
-          pip install flask
+      - name: Установка Flask
+        run: pip install flask
 
-      - name: Проверка синтаксиса blaze.py
-        run: python -m py_compile blaze.py
+      - name: Генерация статического сайта
+        run: python blaze.py --build --base "/${{ github.event.repository.name }}"
 
-      - name: Быстрый smoke-тест (приложение стартует)
-        run: |
-          python - <<'EOF'
-          import sys
-          sys.path.insert(0, '.')
-          import importlib.util
-          spec = importlib.util.spec_from_file_location("blaze", "blaze.py")
-          mod = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(mod)
-          # Проверяем, что маршруты созданы
-          routes = sorted(str(r) for r in mod.app.url_map.iter_rules())
-          assert len(routes) >= 2, "Маршруты не зарегистрированы!"
-          print("OK: маршруты ->", routes)
-          EOF
+      - name: Настройка GitHub Pages
+        uses: actions/configure-pages@v5
 
-  # ---------- 2. Деплой на сервер ----------
+      - name: Загрузка артефакта
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
   deploy:
-    name: Деплой на сервер
-    needs: check
+    name: Публикация на GitHub Pages
+    needs: build
     runs-on: ubuntu-latest
-    # Если сервера пока нет — поставь 'if: false', чтобы отключить деплой
-    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Клонирование репозитория
-        uses: actions/checkout@v4
-
-      - name: Копирование blaze.py на сервер
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}        # IP или домен сервера
-          username: ${{ secrets.SSH_USER }}    # пользователь, например root
-          key: ${{ secrets.SSH_KEY }}          # приватный SSH-ключ
-          port: 22
-          source: "blaze.py"
-          target: "/opt/blaze-rust-wiki"
-
-      - name: Установка зависимостей и перезапуск
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            set -e
-            cd /opt/blaze-rust-wiki
-            pip3 install --upgrade flask || true
-            # Перезапуск через systemd (сервис blaze-wiki)
-            if systemctl list-units --type=service | grep -q blaze-wiki; then
-              sudo systemctl restart blaze-wiki
-              echo "Сервис blaze-wiki перезапущен"
-            else
-              echo "Сервис blaze-wiki не найден — создайте systemd unit (см. ниже)"
-            fi
+      - name: Деплой на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
