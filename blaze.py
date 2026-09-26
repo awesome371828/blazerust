@@ -2,6 +2,7 @@ import sys
 import os
 import shutil
 
+from flask import Flask, render_template_string, abort
 # -*- coding: utf-8 -*-
 """
 BLAZE RUST — Wiki сайт сервера (Flask, один файл)
