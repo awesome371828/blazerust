@@ -1,3 +1,7 @@
+import sys
+import os
+import shutil
+
 # -*- coding: utf-8 -*-
 """
 BLAZE RUST — Wiki сайт сервера (Flask, один файл)
