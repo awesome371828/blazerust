@@ -19,8 +19,10 @@ from flask import Flask, render_template_string, abort
 app = Flask(__name__)
 
 ONLINE = 6
-SERVER_IP = "play.blazerust.ru:28015"
+SERVER_IP = "46.174.48.219:28015"
 DISCORD = "https://discord.gg/blazerust"
+TELEGRAM_CHANNEL = "https://t.me/blazerust_tg"
+TELEGRAM_CHAT = "https://t.me/BlazeRust_Chat"
 
 # ---------------------------------------------------------------------------
 # Структура навигации
@@ -222,15 +224,15 @@ PAGES["info-start"] = {
 
 <h2>Шаг 2. Подключись к серверу</h2>
 <p>Скопируй адрес сервера и вставь его в игровую консоль (клавиша F1):</p>
-<div class="codeblock">connect play.blazerust.ru:28015</div>
+<div class="codeblock">connect %s</div>
 
 <h2>Шаг 3. Начни выживать</h2>
 <div class="steps">
-  <div class="step reveal"><div class="step-num">1</div><div><h3>Собери базу</h3><p>Скорость добычи x10/x50 — фундамент и стены появятся за считанные минуты.</p></div></div>
+  <div class="step reveal"><div class="step-num">1</div><div><h3>Собери базу</h3><p>Скорость добычи x50 — фундамент и стены появятся за считанные минуты.</p></div></div>
   <div class="step reveal"><div class="step-num">2</div><div><h3>Забери киты</h3><p>Введи /kit в чате и получи стартовый набор.</p></div></div>
   <div class="step reveal"><div class="step-num">3</div><div><h3>Объединяйся</h3><p>Создай клан через /clan create Название и зови друзей.</p></div></div>
 </div>
-''' + callout("tip", "Совет", "Перед первым заходом прочитай вводные и основные правила — это сэкономит нервы и сохранит донат.")
+''' % SERVER_IP + callout("tip", "Совет", "Перед первым заходом прочитай вводные и основные правила — это сэкономит нервы и сохранит донат.")
     + related([("info-connect", "Подключение connect"), ("info-commands", "Команды чата"), ("rules-intro", "Вводные правила")]),
 }
 
@@ -353,15 +355,15 @@ PAGES["info-connect"] = {
 <p class="lead">Подключение к BLAZE RUST занимает меньше минуты. Используй игровую консоль или добавь сервер в избранное.</p>
 
 <h2>Адрес сервера</h2>
-<div class="codeblock">connect play.blazerust.ru:28015</div>
+<div class="codeblock">connect %s</div>
 
 <h2>Как подключиться</h2>
 <div class="steps">
   <div class="step reveal"><div class="step-num">1</div><div><h3>Запусти Rust</h3><p>Открой пиратскую версию Rust и нажми F1, чтобы открыть консоль.</p></div></div>
-  <div class="step reveal"><div class="step-num">2</div><div><h3>Вставь команду</h3><p>Вставь <code>connect play.blazerust.ru:28015</code> и нажми Enter.</p></div></div>
+  <div class="step reveal"><div class="step-num">2</div><div><h3>Вставь команду</h3><p>Вставь <code>connect %s</code> и нажми Enter.</p></div></div>
   <div class="step reveal"><div class="step-num">3</div><div><h3>Начинай выживать</h3><p>Дождись загрузки и отправляйся на пустошь!</p></div></div>
 </div>
-''' + callout("warn", "Ошибка Timed Out (EAC)?", "Отключи EAC/античит в лаунчере или перезапусти игру. Подробнее — в технических гайдах.")
+''' % (SERVER_IP, SERVER_IP) + callout("warn", "Ошибка Timed Out (EAC)?", "Отключи EAC/античит в лаунчере или перезапусти игру. Подробнее — в технических гайдах.")
     + related([("info-start", "Как начать"), ("info-steamid", "Как узнать SteamID"), ("info-commands", "Команды чата")]),
 }
 
@@ -373,9 +375,9 @@ HOME_HTML = '''
   <div class="hero-badge"><span class="pulse-dot"></span>Пиратский сервер Rust · Без лицензии</div>
   <h1 class="hero-title">BLAZE <span>RUST</span></h1>
   <div class="hero-tags">
-    <span>X10/X50</span><span>NOLIMIT</span><span>CLANS</span><span>LOOT+</span>
+    <span>X50</span><span>NOLIMIT</span><span>CLANS</span><span>LOOT+</span>
   </div>
-  <p class="hero-sub">Самый горячий пиратский сервер Rust: ускоренная добыча, безлимитные возможности, кланы и усиленный лут. Выживай, строй, рейдь — и забирай своё место под солнцем пустоши!</p>
+  <p class="hero-sub">BLAZE RUST X50 — создан для интенсивной, динамичной игры. Сделан с упором в комфорт для игроков, с максимальной производительностью и использованием передового железа. Выживай, строй, рейдь — и забирай своё место под солнцем пустоши!</p>
   <div class="hero-cta">
     <a class="btn btn-primary" href="/page/info-start">🚀 Начать играть</a>
     <a class="btn btn-ghost" href="/page/rules-intro">📜 Правила</a>
@@ -385,57 +387,69 @@ HOME_HTML = '''
     <div class="stat"><b class="count" data-count="6">0</b><small>онлайн</small></div>
     <div class="stat"><b class="count" data-count="250">0</b><small>макс. игроков</small></div>
     <div class="stat"><b class="count" data-count="24">0</b><small>поддержка 24/7</small></div>
-    <div class="stat"><b class="count" data-count="100">0</b><small>вайпы по графику</small></div>
+    <div class="stat"><b class="count" data-count="50">0</b><small>рейты сервера</small></div>
+  </div>
+</section>
+
+<section class="section telegram-block">
+  <div class="tg-card">
+    <div class="tg-emoji">📢</div>
+    <div class="tg-body">
+      <h2 class="section-title">BLAZE RUST в Telegram!</h2>
+      <p class="tg-text">🔥 Не упусти шанс получить эксклюзивные промокоды в нашем Telegram-канале!</p>
+      <a class="tg-link" href="https://t.me/blazerust_tg" target="_blank" rel="noopener">https://t.me/blazerust_tg</a>
+      <p class="tg-text">💬 Также вы можете общаться в нашем Telegram-чате: <a href="https://t.me/BlazeRust_Chat" target="_blank" rel="noopener">@BlazeRust_Chat</a></p>
+      <p class="tg-text">Присоединяйтесь к нам, чтобы быть в курсе всех новостей и бонусов! 🎉</p>
+    </div>
   </div>
 </section>
 
 <section class="section">
-  <h2 class="section-title reveal">Особенности сервера</h2>
-  <p class="section-sub reveal">Всё, за что игроки любят BLAZE RUST.</p>
+  <h2 class="section-title reveal">Проект</h2>
+  <p class="section-sub reveal">BlazeRust — для комфортной игры. Это не просто сервер. Здесь прислушиваются к мнению игроков. И только вы решаете, что будет на сервере.</p>
+  <div class="grid grid-2">
+    <div class="card tilt reveal"><div class="card-ico">⚡</div><h3>BlazeRust — Reborn</h3><p>Сервер перезапущен и развивается каждый день. Работа над ним идёт постоянно — контент добавляется с каждым обновлением.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🖥️</div><h3>Как зайти?</h3><p>Скопируй адрес и вставь в игровую консоль (F1):</p><div class="codeblock" style="margin-top:10px">connect %s</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title reveal">Основные плагины</h2>
   <div class="grid grid-4">
-    <div class="card tilt reveal"><div class="card-ico">⚡</div><h3>X10/X50</h3><p>Скорость добычи и крафта до x10–x50. Собери базу и снаряжение за один вечер.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">♾️</div><h3>NOLIMIT</h3><p>Никаких искусственных ограничений: строй где хочешь и сколько хочешь.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">⚔️</div><h3>CLANS</h3><p>Полноценная клановая система: создавай клан, зови друзей и захватывай карту.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">💎</div><h3>LOOT+</h3><p>Улучшенный лут в ящиках и на военных объектах. Дроп бьёт рекорды.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">📋</div><h3>Меню сервера</h3><p>Информация о сервере, система китов и вайпблок. В настройках — отображение убийств и автозакрытие дверей.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🛒</div><h3>Магазин предметов</h3><p>Полноценный внутриигровой магазин с удобной выдачей.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">💬</div><h3>Чат-система</h3><p>Удобный чат с поддержкой личных сообщений и команд.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">⚔️</div><h3>Клановая система</h3><p>Создавай клан, зови друзей и захватывай карту.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🎉</div><h3>Ивент-системы</h3><p>Различные ивенты и повышенный дроп с танка.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🔧</div><h3>Крафт без верстака</h3><p>Всё изучено, вещи не ломаются, авто-сортировка в ящиках.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🚁</div><h3>Коптер по кнопке</h3><p>Вызов коптера одной кнопкой. Бесконечный день.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🔁</div><h3>ТП, трейд, upgrade</h3><p>Метаболизм, трейд, телепорт и upgrade-системы.</p></div>
   </div>
 </section>
 
 <section class="section">
-  <h2 class="section-title reveal">Преимущества</h2>
+  <h2 class="section-title reveal">Оптимизация</h2>
   <div class="grid grid-3">
-    <div class="card tilt reveal"><div class="card-ico">🛡️</div><h3>Античит</h3><p>Жёсткая борьба с читерами: баны без права обжалования и возврата доната.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">👮</div><h3>Администрация 24/7</h3><p>Активные админы онлайн, быстрые разборы жалоб через Discord.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">🗓️</div><h3>Вайпы по расписанию</h3><p>Регулярные вайпы по понятному графику — следи за анонсами.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">🛒</div><h3>Мгновенный магазин</h3><p>Покупки выдаются через /store без ожидания и очередей.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">💬</div><h3>Дружное сообщество</h3><p>Активный Discord, кланы, ивенты и конкурсы с призами.</p></div>
-    <div class="card tilt reveal"><div class="card-ico">🚀</div><h3>Стабильный сервер</h3><p>Современное железо, без лагов и падений даже на пике онлайна.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">⚡</div><h3>FPS+</h3><p>Все плагины делались с упором на оптимизацию. Вырезаны все лишние объекты с карты.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">🔥</div><h3>Огонь вырезан</h3><p>Дополнительно огонь и трупы полностью вырезаны с сервера — ещё больше FPS.</p></div>
+    <div class="card tilt reveal"><div class="card-ico">📈</div><h3>Комфортный геймплей</h3><p>Как для кланов, так и для небольших команд. Это не конечный результат — работа идёт каждый день.</p></div>
   </div>
-</section>
-
-<section class="section">
-  <h2 class="section-title reveal">Как начать</h2>
-  <div class="steps">
-    <div class="step reveal"><div class="step-num">1</div><div><h3>Скачай пиратку Rust</h3><p>Лицензия не нужна — сервер полностью пиратский.</p></div></div>
-    <div class="step reveal"><div class="step-num">2</div><div><h3>Подключись к серверу</h3><p>В консоли (F1) введи <code>connect play.blazerust.ru:28015</code>.</p></div></div>
-    <div class="step reveal"><div class="step-num">3</div><div><h3>Выживай и побеждай</h3><p>Забирай киты, строй базу, собирай клан и доминируй на пустоши.</p></div></div>
-  </div>
-  <div class="hero-cta" style="margin-top:28px"><a class="btn btn-primary" href="/page/info-start">Подробная инструкция</a></div>
 </section>
 
 <section class="section">
   <h2 class="section-title reveal">Частые вопросы</h2>
   <div class="faq">
     <details class="reveal"><summary>Это пиратский сервер? Нужна лицензия?</summary><p>Да, сервер полностью пиратский. Лицензия не нужна — достаточно скачать пиратскую версию Rust и подключиться по адресу сервера.</p></details>
-    <details class="reveal"><summary>Какие вайпы и когда?</summary><p>Вайпы проходят по расписанию, которое публикуется в нашем Discord и в разделе Wiki. Следи за обновлениями.</p></details>
+    <details class="reveal"><summary>Какие вайпы и когда?</summary><p>Вайпы проходят по расписанию, которое публикуется в нашем Telegram и Discord. Следи за обновлениями.</p></details>
     <details class="reveal"><summary>Как создать клан?</summary><p>Используй команду /clan create Название. Полная инструкция — в разделе «Как создать клан».</p></details>
     <details class="reveal"><summary>Где купить привилегию?</summary><p>В магазине через /store на сервере или на сайте. Выдача происходит мгновенно после оплаты.</p></details>
     <details class="reveal"><summary>Что делать, если заметил читера?</summary><p>Оставь жалобу в Discord через тикет с видео-доказательствами. Инструкция — в разделе «Как подать жалобу».</p></details>
   </div>
 </section>
-'''
+''' % SERVER_IP
 
 # ---------------------------------------------------------------------------
-# Шаблон сайта (дизайн + анимации)
+# Шаблон сайта (дизайн + анимации) — тёмная тема
 # ---------------------------------------------------------------------------
 BASE = '''
 <!doctype html>
@@ -443,7 +457,7 @@ BASE = '''
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="BLAZE RUST [ X10/X50 | NOLIMIT | CLANS | LOOT+ ] — пиратский сервер Rust. Правила, донат, наказания, инструкции.">
+<meta name="description" content="BLAZE RUST [ X50 | NOLIMIT | CLANS | LOOT+ ] — пиратский сервер Rust. Правила, донат, наказания, инструкции.">
 <title>{{ page_title }} — BLAZE RUST</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -451,62 +465,63 @@ BASE = '''
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg0:#03141c;--bg1:#042230;--bg2:#063245;
-  --card:rgba(9,42,54,.55);--card2:rgba(13,56,70,.4);
-  --line:rgba(103,232,249,.16);--line2:rgba(103,232,249,.32);
-  --cyan:#22d3ee;--aqua:#7ff0f5;--teal:#2dd4bf;--sky:#38bdf8;
-  --text:#dbf6fd;--muted:#9cc7d4;
-  --grad:linear-gradient(120deg,#22d3ee,#2dd4bf 50%,#38bdf8);
-  --shadow:0 20px 50px rgba(3,40,52,.55);
+  --bg0:#02080d;--bg1:#02111a;--bg2:#021a26;
+  --card:rgba(4,16,23,.72);--card2:rgba(6,26,36,.62);
+  --line:rgba(103,232,249,.12);--line2:rgba(103,232,249,.24);
+  --cyan:#22d3ee;--aqua:#67e8f9;--teal:#2dd4bf;--sky:#38bdf8;
+  --text:#c9eef7;--muted:#8ab8c6;
+  --grad:linear-gradient(120deg,#0891b2,#14b8a6 50%,#0284c7);
+  --grad-hot:linear-gradient(120deg,#22d3ee,#2dd4bf 50%,#38bdf8);
+  --shadow:0 20px 50px rgba(0,0,0,.6);
   --radius:18px;
 }
 html{scroll-behavior:smooth}
 body{font-family:'Manrope',sans-serif;background:var(--bg0);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6}
 a{color:var(--cyan)}
-code{font-family:'JetBrains Mono',monospace;color:var(--aqua);background:rgba(34,211,238,.1);padding:2px 7px;border-radius:7px;border:1px solid var(--line2);font-size:.92em}
+code{font-family:'JetBrains Mono',monospace;color:var(--aqua);background:rgba(34,211,238,.08);padding:2px 7px;border-radius:7px;border:1px solid var(--line2);font-size:.92em}
 
 /* ---------- фон ---------- */
 .bg-fx{position:fixed;inset:0;z-index:-2;background:
-  radial-gradient(1200px 600px at 80% -10%,rgba(34,211,238,.14),transparent 60%),
-  radial-gradient(900px 500px at 0% 30%,rgba(45,212,191,.10),transparent 55%),
-  radial-gradient(1000px 700px at 100% 80%,rgba(56,189,248,.10),transparent 55%),
+  radial-gradient(1100px 560px at 80% -10%,rgba(8,145,178,.16),transparent 60%),
+  radial-gradient(900px 500px at 0% 30%,rgba(20,184,166,.11),transparent 55%),
+  radial-gradient(1000px 700px at 100% 80%,rgba(2,132,199,.11),transparent 55%),
   linear-gradient(180deg,var(--bg0),var(--bg1) 55%,var(--bg0))}
-.bg-fx::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(103,232,249,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(103,232,249,.045) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 0%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 0%,#000 0%,transparent 75%)}
-.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.5;z-index:-1;animation:float 18s ease-in-out infinite}
-.o1{width:420px;height:420px;background:rgba(34,211,238,.35);top:-120px;right:-80px}
-.o2{width:340px;height:340px;background:rgba(45,212,191,.3);bottom:-100px;left:-90px;animation-delay:-6s}
-.o3{width:260px;height:260px;background:rgba(56,189,248,.28);top:40%;left:55%;animation-delay:-12s}
+.bg-fx::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(103,232,249,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(103,232,249,.035) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 0%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 0%,#000 0%,transparent 75%)}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.38;z-index:-1;animation:float 18s ease-in-out infinite}
+.o1{width:420px;height:420px;background:rgba(8,145,178,.4);top:-120px;right:-80px}
+.o2{width:340px;height:340px;background:rgba(20,184,166,.32);bottom:-100px;left:-90px;animation-delay:-6s}
+.o3{width:260px;height:260px;background:rgba(2,132,199,.3);top:40%;left:55%;animation-delay:-12s}
 @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.08)}66%{transform:translate(-25px,25px) scale(.94)}}
 
 /* ---------- шапка ---------- */
-.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(4,28,38,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.burger{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2);background:rgba(13,56,70,.4);color:var(--aqua);font-size:18px;cursor:pointer;transition:.25s}
-.burger:hover{background:rgba(34,211,238,.15);border-color:var(--cyan)}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(2,12,18,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.burger{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--line2);background:rgba(6,26,36,.5);color:var(--aqua);font-size:18px;cursor:pointer;transition:.25s}
+.burger:hover{background:rgba(34,211,238,.12);border-color:var(--cyan)}
 @media(min-width:1024px){.burger{display:none}}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-family:'Unbounded',sans-serif}
-.logo-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--grad);color:#03222c;font-weight:800;font-size:20px;box-shadow:0 0 22px rgba(34,211,238,.45);animation:pulseGlow 3s ease-in-out infinite}
-@keyframes pulseGlow{0%,100%{box-shadow:0 0 14px rgba(34,211,238,.35)}50%{box-shadow:0 0 30px rgba(34,211,238,.65)}}
+.logo-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--grad-hot);color:#02121a;font-weight:800;font-size:20px;box-shadow:0 0 22px rgba(34,211,238,.4);animation:pulseGlow 3s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 14px rgba(34,211,238,.3)}50%{box-shadow:0 0 30px rgba(34,211,238,.55)}}
 .logo-text{font-size:17px;letter-spacing:1px}
 .logo-text span{color:var(--cyan);margin-left:4px}
 .top-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
-.online-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;border:1px solid var(--line2);background:rgba(13,56,70,.45);font-size:13px;font-weight:700;color:var(--aqua);white-space:nowrap}
+.online-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;border:1px solid var(--line2);background:rgba(6,26,36,.55);font-size:13px;font-weight:700;color:var(--aqua);white-space:nowrap}
 .online-badge i{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:ping 1.6s infinite}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
 
 /* ---------- сайдбар ---------- */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:272px;padding:84px 16px 24px;background:rgba(4,26,36,.85);backdrop-filter:blur(18px);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .35s cubic-bezier(.22,1,.36,1);z-index:60;overflow-y:auto}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:272px;padding:84px 16px 24px;background:rgba(2,12,18,.92);backdrop-filter:blur(18px);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .35s cubic-bezier(.22,1,.36,1);z-index:60;overflow-y:auto}
 body.nav-open .sidebar{transform:translateX(0)}
 @media(min-width:1024px){.sidebar{transform:none}}
-.overlay{position:fixed;inset:0;background:rgba(2,12,18,.6);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:55}
+.overlay{position:fixed;inset:0;background:rgba(0,5,8,.7);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:55}
 body.nav-open .overlay{opacity:1;pointer-events:auto}
 @media(min-width:1024px){.overlay{display:none}}
 .sidebar-head{font-family:'Unbounded',sans-serif;font-size:12px;letter-spacing:3px;color:var(--cyan);padding:6px 12px 10px;text-transform:uppercase}
 .nav-cat{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:18px 12px 6px;opacity:.75}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:2px 0;border-radius:12px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;border:1px solid transparent;transition:.25s}
 .nav-item::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);opacity:0;transform:scale(0);transition:.25s}
-.nav-item:hover{color:var(--text);background:rgba(34,211,238,.08);border-color:var(--line);transform:translateX(4px)}
+.nav-item:hover{color:var(--text);background:rgba(34,211,238,.07);border-color:var(--line);transform:translateX(4px)}
 .nav-item:hover::before{opacity:1;transform:scale(1)}
-.nav-item.active{color:#04222c;background:var(--grad);border-color:transparent;box-shadow:0 8px 24px rgba(34,211,238,.35)}
+.nav-item.active{color:#02121a;background:var(--grad-hot);border-color:transparent;box-shadow:0 8px 24px rgba(34,211,238,.3)}
 .nav-item.active::before{opacity:0}
 
 /* ---------- контент ---------- */
@@ -515,25 +530,25 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 
 /* ---------- кнопки ---------- */
 .btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;border-radius:14px;font-weight:800;font-size:14px;letter-spacing:.3px;text-decoration:none;cursor:pointer;border:none;transition:transform .25s,box-shadow .25s;font-family:inherit}
-.btn-primary{background:var(--grad);color:#03222c;box-shadow:0 10px 30px rgba(34,211,238,.35)}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(34,211,238,.5)}
-.btn-ghost{background:rgba(13,56,70,.4);color:var(--aqua);border:1px solid var(--line2)}
-.btn-ghost:hover{transform:translateY(-3px);background:rgba(34,211,238,.12);border-color:var(--cyan)}
-.btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);transition:left .55s}
+.btn-primary{background:var(--grad-hot);color:#02121a;box-shadow:0 10px 30px rgba(34,211,238,.3)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(34,211,238,.45)}
+.btn-ghost{background:rgba(6,26,36,.5);color:var(--aqua);border:1px solid var(--line2)}
+.btn-ghost:hover{transform:translateY(-3px);background:rgba(34,211,238,.1);border-color:var(--cyan)}
+.btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .55s}
 .btn:hover::after{left:130%}
 .btn-sm{padding:9px 16px;font-size:13px;border-radius:11px}
-.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .65s ease-out forwards;pointer-events:none}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:rip .65s ease-out forwards;pointer-events:none}
 @keyframes rip{to{transform:scale(1);opacity:0}}
 
 /* ---------- hero ---------- */
 .hero{position:relative;text-align:center;padding:56px 10px 30px;animation:fadeUp .8s ease both}
-.hero-badge{display:inline-flex;align-items:center;gap:9px;padding:8px 18px;border-radius:999px;border:1px solid var(--line2);background:rgba(13,56,70,.45);font-size:13px;font-weight:700;color:var(--aqua);margin-bottom:22px;backdrop-filter:blur(8px)}
+.hero-badge{display:inline-flex;align-items:center;gap:9px;padding:8px 18px;border-radius:999px;border:1px solid var(--line2);background:rgba(6,26,36,.55);font-size:13px;font-weight:700;color:var(--aqua);margin-bottom:22px;backdrop-filter:blur(8px)}
 .pulse-dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:ping 1.6s infinite}
-.hero-title{font-family:'Unbounded',sans-serif;font-size:clamp(40px,8vw,86px);font-weight:800;line-height:1.05;background:linear-gradient(120deg,#a5f3fc,#22d3ee 40%,#2dd4bf 65%,#7dd3fc);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:gradShift 6s linear infinite;filter:drop-shadow(0 10px 30px rgba(34,211,238,.25))}
+.hero-title{font-family:'Unbounded',sans-serif;font-size:clamp(40px,8vw,86px);font-weight:800;line-height:1.05;background:linear-gradient(120deg,#67e8f9,#22d3ee 40%,#2dd4bf 65%,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:gradShift 6s linear infinite;filter:drop-shadow(0 10px 30px rgba(8,145,178,.35))}
 .hero-title span{color:var(--cyan)}
 @keyframes gradShift{to{background-position:200% center}}
 .hero-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:22px 0 14px}
-.hero-tags span{padding:7px 16px;border-radius:999px;border:1px solid var(--line2);background:rgba(34,211,238,.08);color:var(--aqua);font-size:13px;font-weight:800;letter-spacing:1px}
+.hero-tags span{padding:7px 16px;border-radius:999px;border:1px solid var(--line2);background:rgba(34,211,238,.07);color:var(--aqua);font-size:13px;font-weight:800;letter-spacing:1px}
 .hero-sub{max-width:640px;margin:0 auto 30px;color:var(--muted);font-size:17px}
 .hero-cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:44px}
 .hero-stats{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
@@ -542,20 +557,31 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 .stat b{display:block;font-family:'Unbounded',sans-serif;font-size:30px;color:var(--aqua)}
 .stat small{color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase}
 
+/* ---------- Telegram ---------- */
+.telegram-block{max-width:760px;margin:0 auto}
+.tg-card{display:flex;gap:18px;align-items:flex-start;padding:28px;border-radius:22px;border:1px solid rgba(34,197,94,.28);background:linear-gradient(135deg,rgba(6,26,36,.85),rgba(8,60,38,.5));backdrop-filter:blur(12px);animation:fadeUp .7s ease both;transition:.3s}
+.tg-card:hover{border-color:rgba(34,197,94,.5);box-shadow:0 0 40px rgba(34,197,94,.15)}
+.tg-emoji{font-size:42px;line-height:1}
+.tg-body{flex:1}
+.tg-card .section-title{margin-bottom:10px;font-size:clamp(20px,3vw,28px)}
+.tg-text{color:var(--muted);font-size:15px;margin-bottom:8px}
+.tg-link{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;color:#4ade80;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);padding:8px 14px;border-radius:12px;text-decoration:none;margin:6px 0 12px;transition:.25s}
+.tg-link:hover{background:rgba(34,197,94,.18);box-shadow:0 0 18px rgba(34,197,94,.25)}
+
 /* ---------- секции и карточки ---------- */
 .section{padding:34px 0}
-.section-title{font-family:'Unbounded',sans-serif;font-size:clamp(22px,3.4vw,34px);margin-bottom:8px;background:linear-gradient(120deg,#e0f7fd,#7ff0f5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.section-title{font-family:'Unbounded',sans-serif;font-size:clamp(22px,3.4vw,34px);margin-bottom:8px;background:linear-gradient(120deg,#baf3fb,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
 .section-sub{color:var(--muted);margin-bottom:28px}
 .grid{display:grid;gap:18px}
 .grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .grid-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .grid-4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .card{position:relative;padding:26px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);backdrop-filter:blur(12px);transition:transform .35s,box-shadow .35s,border-color .35s;overflow:hidden}
-.card::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 50% -20%,rgba(34,211,238,.16),transparent 70%);opacity:0;transition:opacity .35s}
-.card:hover{transform:translateY(-8px);border-color:var(--line2);box-shadow:0 22px 50px rgba(3,40,52,.6),0 0 0 1px rgba(34,211,238,.12)}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 50% -20%,rgba(34,211,238,.12),transparent 70%);opacity:0;transition:opacity .35s}
+.card:hover{transform:translateY(-8px);border-color:var(--line2);box-shadow:0 22px 50px rgba(0,0,0,.65),0 0 0 1px rgba(34,211,238,.1)}
 .card:hover::before{opacity:1}
-.card-ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:rgba(34,211,238,.12);border:1px solid var(--line2);margin-bottom:16px;transition:.35s}
-.card:hover .card-ico{transform:scale(1.1) rotate(-6deg);background:var(--grad);box-shadow:0 8px 24px rgba(34,211,238,.4)}
+.card-ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:rgba(34,211,238,.1);border:1px solid var(--line2);margin-bottom:16px;transition:.35s}
+.card:hover .card-ico{transform:scale(1.1) rotate(-6deg);background:var(--grad-hot);box-shadow:0 8px 24px rgba(34,211,238,.35)}
 .card h3{font-size:18px;margin-bottom:8px}
 .card p{color:var(--muted);font-size:14px}
 
@@ -563,7 +589,7 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 .steps{display:grid;gap:16px}
 .step{display:flex;gap:18px;padding:22px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);backdrop-filter:blur(10px);transition:.3s}
 .step:hover{border-color:var(--line2);transform:translateX(8px)}
-.step-num{flex:0 0 auto;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-weight:800;font-size:18px;background:var(--grad);color:#03222c;box-shadow:0 6px 18px rgba(34,211,238,.35)}
+.step-num{flex:0 0 auto;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-family:'Unbounded',sans-serif;font-weight:800;font-size:18px;background:var(--grad-hot);color:#02121a;box-shadow:0 6px 18px rgba(34,211,238,.3)}
 .step h3{font-size:17px;margin-bottom:4px}
 .step p{color:var(--muted);font-size:14px}
 
@@ -571,13 +597,13 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 .callout{padding:18px 22px;border-radius:14px;border:1px solid;margin:24px 0;display:flex;gap:14px;align-items:flex-start;animation:fadeUp .6s ease both}
 .callout b{display:block;margin-bottom:2px}
 .callout p{font-size:14px;opacity:.92;margin:0}
-.callout.tip{background:rgba(45,212,191,.1);border-color:rgba(45,212,191,.35)}
+.callout.tip{background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.3)}
 .callout.tip b{color:#5eead4}
-.callout.note{background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.35)}
+.callout.note{background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.3)}
 .callout.note b{color:#7dd3fc}
-.callout.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35)}
+.callout.warn{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
 .callout.warn b{color:#fcd34d}
-.callout.danger{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.4)}
+.callout.danger{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.35)}
 .callout.danger b{color:#fca5a5}
 
 /* ---------- статья ---------- */
@@ -585,12 +611,12 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 .crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px}
 .crumbs a{color:var(--cyan);text-decoration:none;transition:.2s}
 .crumbs a:hover{text-shadow:0 0 12px rgba(34,211,238,.8)}
-.page-title{font-family:'Unbounded',sans-serif;font-size:clamp(26px,4.6vw,44px);margin-bottom:10px;background:linear-gradient(120deg,#e0f7fd,#7ff0f5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.page-title{font-family:'Unbounded',sans-serif;font-size:clamp(26px,4.6vw,44px);margin-bottom:10px;background:linear-gradient(120deg,#baf3fb,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
 .lead{color:var(--muted);font-size:16px;max-width:760px;margin-bottom:26px}
 .article h2{font-family:'Unbounded',sans-serif;font-size:clamp(19px,2.6vw,26px);margin:36px 0 16px;display:flex;align-items:center;gap:12px}
-.article h2::before{content:"";width:8px;height:28px;border-radius:99px;background:var(--grad);box-shadow:0 0 16px rgba(34,211,238,.6)}
+.article h2::before{content:"";width:8px;height:28px;border-radius:99px;background:var(--grad-hot);box-shadow:0 0 16px rgba(34,211,238,.5)}
 .article h3{font-size:18px;margin:22px 0 10px;color:var(--aqua)}
-.article p{color:#cdeaf3;margin-bottom:12px}
+.article p{color:#b7dbe4;margin-bottom:12px}
 
 /* ---------- список-карточки ---------- */
 .list{display:grid;gap:14px;margin:18px 0}
@@ -603,26 +629,26 @@ body.nav-open .overlay{opacity:1;pointer-events:auto}
 /* ---------- таблицы ---------- */
 .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--card);backdrop-filter:blur(10px);margin:20px 0}
 table{width:100%;border-collapse:collapse;min-width:520px}
-th{font-family:'Unbounded',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;text-align:left;padding:16px 20px;color:var(--aqua);background:rgba(34,211,238,.08);border-bottom:1px solid var(--line2)}
-td{padding:15px 20px;font-size:14px;border-bottom:1px solid var(--line);color:#cdeaf3}
+th{font-family:'Unbounded',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;text-align:left;padding:16px 20px;color:var(--aqua);background:rgba(34,211,238,.07);border-bottom:1px solid var(--line2)}
+td{padding:15px 20px;font-size:14px;border-bottom:1px solid var(--line);color:#b7dbe4}
 tbody tr{transition:.2s}
-tbody tr:hover{background:rgba(34,211,238,.07)}
+tbody tr:hover{background:rgba(34,211,238,.06)}
 tbody tr:last-child td{border-bottom:none}
 .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
-.tag.bad{background:rgba(248,113,113,.15);color:#fca5a5;border:1px solid rgba(248,113,113,.4)}
-.tag.mid{background:rgba(251,191,36,.12);color:#fcd34d;border:1px solid rgba(251,191,36,.35)}
-.tag.ok{background:rgba(45,212,191,.12);color:#5eead4;border:1px solid rgba(45,212,191,.35)}
-.cmd-mini{display:inline-block;padding:3px 10px;border-radius:8px;background:rgba(34,211,238,.1);border:1px solid var(--line2);font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--aqua)}
+.tag.bad{background:rgba(248,113,113,.13);color:#fca5a5;border:1px solid rgba(248,113,113,.35)}
+.tag.mid{background:rgba(251,191,36,.1);color:#fcd34d;border:1px solid rgba(251,191,36,.3)}
+.tag.ok{background:rgba(45,212,191,.1);color:#5eead4;border:1px solid rgba(45,212,191,.3)}
+.cmd-mini{display:inline-block;padding:3px 10px;border-radius:8px;background:rgba(34,211,238,.08);border:1px solid var(--line2);font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--aqua)}
 
 /* ---------- команды / код ---------- */
-.cmd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-radius:12px;border:1px solid var(--line);background:rgba(2,20,28,.7);font-family:'JetBrains Mono',monospace;font-size:14px;color:#7ff0f5;margin:10px 0;transition:.25s}
-.cmd:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(34,211,238,.2);transform:translateX(4px)}
-.codeblock{background:rgba(2,20,28,.85);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#7ff0f5;margin:14px 0;overflow-x:auto}
+.cmd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;border-radius:12px;border:1px solid var(--line);background:rgba(1,9,14,.8);font-family:'JetBrains Mono',monospace;font-size:14px;color:#67e8f9;margin:10px 0;transition:.25s}
+.cmd:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(34,211,238,.18);transform:translateX(4px)}
+.codeblock{background:rgba(1,9,14,.9);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#67e8f9;margin:14px 0;overflow-x:auto}
 
 /* ---------- прайс-карточки ---------- */
 .price-card{position:relative;padding:28px 24px;border-radius:20px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(12px);text-align:center;transition:.35s;overflow:hidden}
-.price-card:hover{transform:translateY(-10px);border-color:var(--line2);box-shadow:0 24px 60px rgba(3,40,52,.65)}
-.price-card.hot{border-color:rgba(34,211,238,.5);box-shadow:0 0 40px rgba(34,211,238,.18)}
+.price-card:hover{transform:translateY(-10px);border-color:var(--line2);box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.price-card.hot{border-color:rgba(34,211,238,.45);box-shadow:0 0 40px rgba(34,211,238,.15)}
 .price-card .price{font-family:'Unbounded',sans-serif;font-size:30px;color:var(--aqua);margin:14px 0}
 .price-card ul{list-style:none;text-align:left;margin:14px 0 20px;display:grid;gap:8px}
 .price-card li{font-size:13.5px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
@@ -631,7 +657,7 @@ tbody tr:last-child td{border-bottom:none}
 /* ---------- pager ---------- */
 .pager{display:flex;justify-content:space-between;gap:14px;margin-top:44px;flex-wrap:wrap}
 .pager-btn{flex:1;min-width:220px;padding:18px 22px;border-radius:16px;border:1px solid var(--line);background:var(--card);text-decoration:none;color:var(--muted);transition:.3s;display:block}
-.pager-btn:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 14px 34px rgba(3,40,52,.5);color:var(--text)}
+.pager-btn:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.5);color:var(--text)}
 .pager-btn span{font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.8;display:block;margin-bottom:4px}
 .pager-btn strong{color:var(--aqua);font-size:15px}
 .pager-btn.next{text-align:right}
@@ -641,12 +667,12 @@ tbody tr:last-child td{border-bottom:none}
 .related h3{font-family:'Unbounded',sans-serif;font-size:16px;color:var(--aqua);margin-bottom:14px;letter-spacing:1px}
 .related-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .related-card{display:block;padding:18px;border-radius:14px;border:1px solid var(--line);background:var(--card);text-decoration:none;color:var(--text);transition:.3s}
-.related-card:hover{border-color:var(--cyan);transform:translateY(-5px);box-shadow:0 14px 30px rgba(3,40,52,.5)}
+.related-card:hover{border-color:var(--cyan);transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.5)}
 .related-card small{display:block;color:var(--cyan);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
 
 /* ---------- FAQ ---------- */
 .faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:12px;transition:.3s}
-.faq details[open]{border-color:var(--cyan);box-shadow:0 10px 30px rgba(3,40,52,.5)}
+.faq details[open]{border-color:var(--cyan);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .faq summary{cursor:pointer;font-weight:800;font-size:15.5px;display:flex;justify-content:space-between;align-items:center;gap:12px;list-style:none}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:"+";font-size:22px;color:var(--cyan);transition:transform .3s}
@@ -654,15 +680,15 @@ tbody tr:last-child td{border-bottom:none}
 .faq p{color:var(--muted);font-size:14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 
 /* ---------- футер и анимации ---------- */
-.footer{margin-left:0;padding:30px 24px 40px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line);background:rgba(3,22,30,.5)}
+.footer{margin-left:0;padding:30px 24px 40px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line);background:rgba(1,8,12,.7)}
 @media(min-width:1024px){.footer{margin-left:272px}}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
 .reveal.visible{opacity:1;transform:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 ::-webkit-scrollbar{width:10px}
-::-webkit-scrollbar-track{background:#04222c}
-::-webkit-scrollbar-thumb{background:linear-gradient(#22d3ee,#2dd4bf);border-radius:99px}
-::selection{background:rgba(34,211,238,.35)}
+::-webkit-scrollbar-track{background:#02121a}
+::-webkit-scrollbar-thumb{background:linear-gradient(#0891b2,#14b8a6);border-radius:99px}
+::selection{background:rgba(34,211,238,.3)}
 </style>
 </head>
 <body>
@@ -791,6 +817,7 @@ def build_static(output_dir="_site", base="/"):
                 os.makedirs(d, exist_ok=True)
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(html)
+            print("OK: %s (%d байт)" % (rel_path, len(html)))
     print("Статический сайт собран в папке %s (base=%s)" % (output_dir, base))
 
 
